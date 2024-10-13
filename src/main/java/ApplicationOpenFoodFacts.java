@@ -1,16 +1,19 @@
 import entites.*;
-import tools.ParseFile;
+import service.StockService;
+import tools.DataParser;
+import tools.FileParser;
+import tools.InputTools;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 public class ApplicationOpenFoodFacts {
     public static void main(String[] args) {
-        // PARSE LE FICHIER POUR RECUPERER LES DONNEES
+        // PARSE LE FICHIER POUR RECUPERER LES LIGNES DE DONNEES
         // Construction du chemin vers le fichier de données
         String repertoireActuel = Paths.get(".").toAbsolutePath().toString();
         String stringPath = repertoireActuel.substring(0, repertoireActuel.length() - 1) + "src\\main\\java\\fichier\\open-food-facts.csv";
@@ -18,127 +21,50 @@ public class ApplicationOpenFoodFacts {
 
         List<String> lignesOpenFoodFacts = new ArrayList<>();
         try {
-            lignesOpenFoodFacts = ParseFile.parseFile(path);
+            lignesOpenFoodFacts = FileParser.parseFile(path);
         }
         catch (IOException e) {
             System.out.println("Le contenu du fichier n'a pas pu être récupéré. Vérifiez que le fichier existe et que le chemin donné est correct.");
         }
 
-        // Optimisation : on s'assure qu'une seule instance
-        // d'un objet réutilisé est créé.
-        HashMap<String, Categorie> mapCategories = new HashMap<>();
-        HashMap<String, Marque> mapMarques = new HashMap<>();
-        HashMap<String, Ingredient> mapIngredients = new HashMap<>();
-        HashMap<String, Allergene> mapAllergenes = new HashMap<>();
-        HashMap<String, Additif> mapAdditifs = new HashMap<>();
+        // PARSE LES DONNEES DU FICHIER ET LES ORGANISE EN OBJETS
+        DataParser parser = new DataParser();
+        Stock stock = parser.parseData(lignesOpenFoodFacts);
 
-        // utiles pour les valeurs nutritionnelles
-        String[] entetesTab = lignesOpenFoodFacts.get(0).split("\\|");
-        List<Produit> produits = new ArrayList<>();
+        // MENU UTILISATEUR
+        StockService stockService = new StockService(stock);
+        boolean finMenu = false;
 
-        // PARSE LES DONNEES POUR LES STOCKER DANS DES OBJETS
-        // On saute la première ligne d'entêtes
-        for (int i = 1; i < lignesOpenFoodFacts.size(); i++) {
-            String[] splittedLigne = lignesOpenFoodFacts.get(i).split("\\|");
+        while(!finMenu) {
+            AffichageMenu.afficherMenuPrincipal();
+            int choice = InputTools.getIntInput(1, 8);
 
-            // Catégorie
-            String categorieNom = splittedLigne[0].trim().toLowerCase();
-            Categorie categorie = mapCategories.computeIfAbsent(categorieNom, k -> new Categorie(categorieNom));
-
-            // Marque
-            String marqueNom = splittedLigne[1].trim();
-            Marque marque = mapMarques.computeIfAbsent(marqueNom.toLowerCase(), k -> new Marque(marqueNom.toLowerCase()));
-
-            // Nom
-            String nom = splittedLigne[2].trim();
-
-            // Score nutritionnel
-            String score = splittedLigne[3].trim().toUpperCase();
-
-            // Ingrédients
-            List<Ingredient> listeIngredients = new ArrayList<>();
-            String[] tabIngredients = splittedLigne[4].trim().replace("_", " ").split("[,;]");
-
-            for (String ing : tabIngredients) {
-                ing = ing.trim();
-
-                if (ing.endsWith(".")) {
-                    ing = ing.substring(0, ing.length() - 1);
-                }
-
-                if (!ing.isEmpty()) {
-                    Ingredient ingredient = mapIngredients.computeIfAbsent(ing, Ingredient::new);
-                    listeIngredients.add(ingredient);
-                }
-            }
-
-            // Allergènes
-            List<Allergene> listeAllergenes = new ArrayList<>();
-
-            if (splittedLigne.length > 28) {
-                String allergenes = splittedLigne[28].trim();
-                if (!allergenes.isEmpty()) {
-                    String[] tabAllergenes = allergenes.replace("_", " ").split("[,;]");
-
-                    for (String al : tabAllergenes) {
-                        al = al.trim().toLowerCase();
-
-                        if (al.startsWith("en:") || al.startsWith("fr:")) {
-                            al = al.substring(0, 3);
-                        }
-
-                        Allergene allergene = mapAllergenes.computeIfAbsent(al, Allergene::new);
-                        listeAllergenes.add(allergene);
-                    }
-                }
-            }
-
-            // Additifs
-            List<Additif> listeAdditifs = new ArrayList<>();
-
-            if (splittedLigne.length > 29) {
-                String additifs = splittedLigne[29].trim();
-                if (!additifs.isEmpty()) {
-                    String[] tabAdditifs = additifs.replace("_", " ").split("[,;]");
-
-                    for (String ad : tabAdditifs) {
-                        ad = ad.trim().toLowerCase();
-
-                        Additif additif = mapAdditifs.computeIfAbsent(ad, Additif::new);
-                        listeAdditifs.add(additif);
-                    }
-                }
-            }
-
-            // présence d'huile de palme
-            Boolean presenceHuileDePalme = null;
-            if (!(splittedLigne.length < 28 || splittedLigne[27].isEmpty())) {
-                int presenceHuileDePalmeInt = Integer.parseInt(splittedLigne[27].trim());
-                presenceHuileDePalme = presenceHuileDePalmeInt == 1;
-            }
-
-            // Valeurs énergétiques
-            HashMap<String, Double> valeursNutritionnelles = new HashMap<>();
-            for (int j = 5; j < 27; j++) {
-                if (splittedLigne.length <= j) {
+            switch (choice) {
+                case 1:
+                    List<Marque> marques = stockService.getMarques();
+                    AffichageMenu.afficherMarques(marques);
                     break;
-                }
+                case 2:
+                    List<Categorie> categories = stockService.getCategories();
+                    AffichageMenu.afficherCategories(categories);
+                    break;
+                case 3:
+                    String inputMarque = InputTools.getStringInput("Entrez le nom de la marque dont vous souhaitez consulter les meilleurs produits :");
+                    Marque marque = stockService.getMarque(inputMarque);
 
-                String donnee = splittedLigne[j].trim();
-                Double valeur = null;
+                    if (marque == null) {
+                        AffichageMenu.afficherInputIncorrect();
+                        break;
+                    }
 
-                if (!donnee.isEmpty()) {
-                    valeur = Double.parseDouble(donnee);
-                }
-
-                valeursNutritionnelles.put(entetesTab[j].trim(), valeur);
+                    List<Produit> meilleursProduitsMarque = stockService.getMeilleursProduitsParMarque(marque);
+                    AffichageMenu.afficherMeilleursProduitsMarque(meilleursProduitsMarque);
+                    break;
+                default:
+                    finMenu = true;
+                    AffichageMenu.afficherFermetureProgramme();
+                    break;
             }
-
-            Produit produit = new Produit(nom, marque, categorie, listeAllergenes, listeAdditifs, listeIngredients, score, valeursNutritionnelles, presenceHuileDePalme);
-
-            produits.add(produit);
         }
-
-        Stock stock = new Stock(produits);
     }
 }

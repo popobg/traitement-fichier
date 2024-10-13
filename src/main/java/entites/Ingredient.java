@@ -10,4 +10,8 @@ public class Ingredient {
     public String getLibelle() {
         return libelle;
     }
+
+    public void setLibelle(String libelle) {
+        this.libelle = libelle;
+    }
 }

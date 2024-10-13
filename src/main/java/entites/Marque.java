@@ -1,6 +1,9 @@
 package entites;
 
-public class Marque {
+import java.text.Collator;
+import java.util.Locale;
+
+public class Marque implements Comparable<Marque> {
     private String nom;
 
     public Marque(String libelle) {
@@ -9,5 +12,15 @@ public class Marque {
 
     public String getNom() {
         return nom;
+    }
+
+    public void setNom(String nouveauNom) {
+        this.nom = nouveauNom;
+    }
+
+    @Override
+    public int compareTo(Marque autreMarque) {
+        Collator collator = Collator.getInstance(Locale.FRANCE);
+        return collator.compare(this.nom.toLowerCase(), autreMarque.getNom().toLowerCase());
     }
 }
