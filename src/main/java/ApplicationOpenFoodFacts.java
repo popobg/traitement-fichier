@@ -1,5 +1,6 @@
 import entites.*;
-import service.StockService;
+import services.AffichageMenu;
+import services.StockService;
 import tools.DataParser;
 import tools.FileParser;
 import tools.InputTools;
