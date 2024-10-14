@@ -2,9 +2,7 @@ package tools;
 
 import entites.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class DataParser {
     // Optimisation : on s'assure qu'une seule instance
@@ -46,8 +44,16 @@ public class DataParser {
             Categorie categorie = this.mapCategories.computeIfAbsent(categorieNom, k -> new Categorie(categorieNom));
 
             // Marque
-            String marqueNom = splittedLigne[1].trim().replaceAll("-", " ");
-            Marque marque = this.mapMarques.computeIfAbsent(marqueNom, k -> new Marque(marqueNom));
+            String marqueNom = splittedLigne[1].trim().toLowerCase().replaceAll("-", " ");
+
+            // faute de frappe dans les données
+            if (marqueNom.endsWith("'")) {
+                marqueNom = marqueNom.substring(0, (marqueNom.length() - 1));
+            }
+
+            String marqueNomFinale = marqueNom;
+
+            Marque marque = this.mapMarques.computeIfAbsent(marqueNom, k -> new Marque(marqueNomFinale));
 
             // Nom
             String nom = splittedLigne[2].trim();
@@ -84,7 +90,7 @@ public class DataParser {
     }
 
     private List<Ingredient> parseIngredients(String[] ligne) {
-        List<Ingredient> listeIngredients = new ArrayList<>();
+        Set<Ingredient> listeIngredients = new HashSet<>();
         String[] tabIngredients = ligne[4].trim().replace("_", " ").split("[,;]");
 
         for (String ing : tabIngredients) {
@@ -100,22 +106,26 @@ public class DataParser {
             }
         }
 
-        return listeIngredients;
+        return listeIngredients.stream().toList();
     }
 
     private List<Allergene> parseAllergenes(String[] ligne) {
-        List<Allergene> listeAllergenes = new ArrayList<>();
+        Set<Allergene> listeAllergenes = new HashSet<>();
 
         if (ligne.length > 28) {
             String allergenes = ligne[28].trim();
             if (!allergenes.isEmpty()) {
-                String[] tabAllergenes = allergenes.replace("_", " ").split("[,;]");
+                String[] tabAllergenes = allergenes.replace("_", " ").replace("-", " ").split("[,;]");
 
                 for (String al : tabAllergenes) {
                     al = al.trim().toLowerCase();
 
                     if (al.startsWith("en:") || al.startsWith("fr:")) {
-                        al = al.substring(0, 3);
+                        al = al.substring(3);
+                    }
+
+                    if (al.endsWith("s")) {
+                        al = al.substring(0, al.length() - 1);
                     }
 
                     Allergene allergene = this.mapAllergenes.computeIfAbsent(al, Allergene::new);
@@ -124,11 +134,11 @@ public class DataParser {
             }
         }
 
-        return listeAllergenes;
+        return listeAllergenes.stream().toList();
     }
 
     private List<Additif> parseAdditifs(String[] ligne) {
-        List<Additif> listeAdditifs = new ArrayList<>();
+        Set<Additif> listeAdditifs = new HashSet<>();
 
         if (ligne.length > 29) {
             String additifs = ligne[29].trim();
@@ -144,7 +154,7 @@ public class DataParser {
             }
         }
 
-        return listeAdditifs;
+        return listeAdditifs.stream().toList();
     }
 
     private HashMap<String, Double> parseValeursNutritionnelles(String[] ligne, String[] header) {

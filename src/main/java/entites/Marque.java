@@ -23,4 +23,15 @@ public class Marque implements Comparable<Marque> {
         Collator collator = Collator.getInstance(Locale.FRANCE);
         return collator.compare(this.nom.toLowerCase(), autreMarque.getNom().toLowerCase());
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Marque)) {
+            return false;
+        }
+
+        Marque autreMarque = (Marque)obj;
+
+        return this.nom.equals(autreMarque.getNom());
+    }
 }

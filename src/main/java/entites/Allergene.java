@@ -7,6 +7,16 @@ public class Allergene {
         this.libelle = libelle;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Allergene)) {
+            return false;
+        }
+
+        Allergene autreAllergene = (Allergene)obj;
+        return this.libelle.equals(autreAllergene.getLibelle());
+    }
+
     public String getLibelle() {
         return libelle;
     }

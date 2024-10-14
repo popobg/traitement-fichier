@@ -23,4 +23,15 @@ public class Categorie implements Comparable<Categorie> {
         Collator collator = Collator.getInstance(Locale.FRANCE);
         return collator.compare(this.libelle.toLowerCase(), autreCategorie.getLibelle().toLowerCase());
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Categorie)) {
+            return false;
+        }
+
+        Categorie autreCategorie = (Categorie)obj;
+
+        return this.libelle.equals(autreCategorie.getLibelle());
+    }
 }

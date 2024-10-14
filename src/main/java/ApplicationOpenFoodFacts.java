@@ -3,13 +3,13 @@ import service.StockService;
 import tools.DataParser;
 import tools.FileParser;
 import tools.InputTools;
+import tools.WaitTools;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class ApplicationOpenFoodFacts {
     public static void main(String[] args) {
@@ -31,22 +31,28 @@ public class ApplicationOpenFoodFacts {
         DataParser parser = new DataParser();
         Stock stock = parser.parseData(lignesOpenFoodFacts);
 
-        // MENU UTILISATEUR
+        // IMPLEMENTATION DU MENU UTILISATEUR
         StockService stockService = new StockService(stock);
         boolean finMenu = false;
 
         while(!finMenu) {
             AffichageMenu.afficherMenuPrincipal();
-            int choice = InputTools.getIntInput(1, 8);
+            int choice = InputTools.getIntInput(1, 8, "Choisissez une option du menu.");
 
             switch (choice) {
                 case 1:
                     List<Marque> marques = stockService.getMarques();
+
                     AffichageMenu.afficherMarques(marques);
+
+                    WaitTools.attendreUtilisateur();
                     break;
                 case 2:
                     List<Categorie> categories = stockService.getCategories();
+
                     AffichageMenu.afficherCategories(categories);
+
+                    WaitTools.attendreUtilisateur();
                     break;
                 case 3:
                     String inputMarque = InputTools.getStringInput("Entrez le nom de la marque dont vous souhaitez consulter les meilleurs produits :");
@@ -54,14 +60,82 @@ public class ApplicationOpenFoodFacts {
 
                     if (marque == null) {
                         AffichageMenu.afficherInputIncorrect();
+
+                        WaitTools.attendreUtilisateur();
                         break;
                     }
 
                     List<Produit> meilleursProduitsMarque = stockService.getMeilleursProduitsParMarque(marque);
-                    AffichageMenu.afficherMeilleursProduitsMarque(meilleursProduitsMarque);
+
+                    AffichageMenu.afficherMeilleursProduitsMarque(meilleursProduitsMarque, marque);
+
+                    WaitTools.attendreUtilisateur();
+                    break;
+                case 4:
+                    String inputCategorie = InputTools.getStringInput("Entrez le nom de la catégorie dont vous souhaitez consulter les meilleurs produits :");
+                    Categorie categorie = stockService.getCategorie(inputCategorie);
+
+                    if (categorie == null) {
+                        AffichageMenu.afficherInputIncorrect();
+
+                        WaitTools.attendreUtilisateur();
+                        break;
+                    }
+
+                    List<Produit> meilleursProduitsCategorie = stockService.getMeilleursProduitsParCategorie(categorie);
+
+                    AffichageMenu.afficherMeilleursProduitsCategorie(meilleursProduitsCategorie, categorie);
+
+                    WaitTools.attendreUtilisateur();
+                    break;
+                case 5:
+                    String inputMarque2 = InputTools.getStringInput("Entrez le nom de la marque dont vous souhaitez consulter les meilleurs produits :");
+                    Marque marque2 = stockService.getMarque(inputMarque2);
+
+                    if (marque2 == null) {
+                        AffichageMenu.afficherInputIncorrect();
+
+                        WaitTools.attendreUtilisateur();
+                        break;
+                    }
+
+                    String inputCategorie2 = InputTools.getStringInput("Entrez le nom de la catégorie dont vous souhaitez consulter les meilleurs produits :");
+                    Categorie categorie2 = stockService.getCategorie(inputCategorie2);
+
+                    if (categorie2 == null) {
+                        AffichageMenu.afficherInputIncorrect();
+
+                        WaitTools.attendreUtilisateur();
+                        break;
+                    }
+
+                    List<Produit> meilleursProduitsCategorieMarque = stockService.getMeilleursProduitsParMarqueEtCategorie(categorie2, marque2);
+
+                    AffichageMenu.afficherMeilleursProduitsCategorieMarque(meilleursProduitsCategorieMarque, categorie2, marque2);
+
+                    WaitTools.attendreUtilisateur();
+                    break;
+                case 6:
+                    int nAllergenes = InputTools.getIntInput("Combien d'allergènes souhaitez-vous consulter ?");
+
+                    List<Pair<Allergene, Integer>> allergenesRecurrents = stockService.getAllergenesRecurrents(nAllergenes);
+
+                    AffichageMenu.afficherAllergenesRecurrents(allergenesRecurrents, nAllergenes);
+
+                    WaitTools.attendreUtilisateur();
+                    break;
+                case 7:
+                    int nAdditifs = InputTools.getIntInput("Combien d'additifs souhaitez-vous consulter ?");
+
+                    List<Pair<Allergene, Integer>> additifsRecurrents = stockService.getAllergenesRecurrents(nAdditifs);
+
+                    AffichageMenu.afficherAllergenesRecurrents(additifsRecurrents, nAdditifs);
+
+                    WaitTools.attendreUtilisateur();
                     break;
                 default:
                     finMenu = true;
+
                     AffichageMenu.afficherFermetureProgramme();
                     break;
             }
