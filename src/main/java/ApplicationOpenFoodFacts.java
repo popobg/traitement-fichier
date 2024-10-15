@@ -1,4 +1,5 @@
 import entites.*;
+import entites.generique.Pair;
 import services.AffichageMenu;
 import services.StockService;
 import tools.DataParser;

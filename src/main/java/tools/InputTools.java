@@ -19,6 +19,7 @@ public class InputTools {
             userInput = scanner.nextLine();
         }
 
+        scanner.close();
         return userInput;
     }
 
@@ -44,12 +45,13 @@ public class InputTools {
             try {
                 userNumber = scanner.nextInt();
             }
-            catch(Exception InputMismatchException) {
+            catch (Exception InputMismatchException) {
                 System.out.println("Ceci n'est pas un nombre entier.");
                 scanner.nextLine();
             }
         }
 
+        scanner.close();
         return userNumber;
     }
 

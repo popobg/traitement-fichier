@@ -1,6 +1,7 @@
 package services;
 
 import entites.*;
+import entites.generique.Pair;
 
 import java.util.*;
 

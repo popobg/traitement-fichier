@@ -1,6 +1,7 @@
 package services;
 
 import entites.*;
+import entites.generique.Pair;
 
 import java.util.List;
 
@@ -18,8 +19,8 @@ public class AffichageMenu {
         System.out.println("3. Rechercher les meilleurs produits pour une marque donnée.");
         System.out.println("4. Rechercher les meilleurs produits pour une catégorie donnée.");
         System.out.println("5. Rechercher les meilleurs produits par marque et par catégorie.");
-        System.out.println("6. Afficher les allergènes les plus courants et leurs récurrences.");
-        System.out.println("7. Afficher les additifs les plus courants et leurs récurrences.");
+        System.out.println("6. Afficher les N allergènes les plus courants et leur occurence.");
+        System.out.println("7. Afficher les N additifs les plus courants et leur occurence.");
         System.out.println("8. Quitter l'application.");
     }
 
