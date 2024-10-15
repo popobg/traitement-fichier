@@ -6,6 +6,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Classe proposant une méthode permettant d'extraire les données d'un fichier
+ * et les retourner dans un format interprétable par Java (liste de chaînes
+ * de caractères).
+ */
 public class FileParser {
     /**
      * Récupère les données d'un fichier texte donné.

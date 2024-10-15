@@ -2,6 +2,9 @@ package tools;
 
 import java.util.Scanner;
 
+/**
+ * Classe de traitement et gestion des cas d'erreurs de saisie utilisateur.
+ */
 public class InputTools {
     /**
      * Demande à l'utilisateur de saisir des données dans la console.
@@ -19,7 +22,6 @@ public class InputTools {
             userInput = scanner.nextLine();
         }
 
-        scanner.close();
         return userInput;
     }
 
@@ -51,7 +53,6 @@ public class InputTools {
             }
         }
 
-        scanner.close();
         return userNumber;
     }
 

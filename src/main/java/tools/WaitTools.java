@@ -18,7 +18,6 @@ public class WaitTools {
         System.out.println("Appuyez sur Entrée pour continuer.");
         Scanner scanner = new Scanner(System.in);
         scanner.nextLine();
-        scanner.close();
     }
 
     /**

@@ -129,9 +129,9 @@ public class ApplicationOpenFoodFacts {
                 case 7:
                     int nAdditifs = InputTools.getIntInput("Combien d'additifs souhaitez-vous consulter ?");
 
-                    List<Pair<Allergene, Integer>> additifsRecurrents = stockService.getAllergenesRecurrents(nAdditifs);
+                    List<Pair<Additif, Integer>> additifsRecurrents = stockService.getAdditifsRecurrents(nAdditifs);
 
-                    AffichageMenu.afficherAllergenesRecurrents(additifsRecurrents, nAdditifs);
+                    AffichageMenu.afficherAdditifsRecurrents(additifsRecurrents, nAdditifs);
 
                     WaitTools.attendreUtilisateur();
                     break;

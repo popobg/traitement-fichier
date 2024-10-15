@@ -5,6 +5,10 @@ import entites.generique.Pair;
 
 import java.util.*;
 
+/**
+ * Classe proposant des méthodes pour récupérer des éléments précis
+ * de l'objet Stock contenant une liste d'objets Produit.
+ */
 public class StockService {
     private final Stock stock;
 
